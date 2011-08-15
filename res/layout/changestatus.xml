@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent" android:layout_width="fill_parent"
+    android:orientation="vertical" >
+<ScrollView android:layout_height="fill_parent" android:layout_width="fill_parent" 
+	android:layout_weight="1">
+	<RelativeLayout android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:padding="10dip" android:gravity="bottom">
+		
+		<LinearLayout android:id="@+id/avatar_panel"
+		    android:gravity="center" 
+		    android:layout_alignParentTop="true"
+		    android:layout_width="fill_parent" android:layout_height="fill_parent" android:visibility="visible" android:orientation="horizontal">
+		    <TextView android:text="@string/my_avatar" style="@style/Label"
+			android:layout_height="wrap_content" android:layout_width="100dip"/>
+		    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="fill_parent" android:layout_height="wrap_content">
+		        <ImageButton android:id="@+id/avatarButton" android:layout_height="84dip" android:layout_width="84dip" android:scaleType="fitCenter"></ImageButton>
+		    </RelativeLayout>
+		</LinearLayout>
+		
+		<LinearLayout android:layout_below="@id/avatar_panel" android:layout_height="wrap_content" android:id="@+id/linearLayoutLevel" android:layout_width="fill_parent">
+			<TextView android:id="@+id/ChangeStatusLevelLabel"
+			android:layout_height="wrap_content"
+			android:text="@string/ChangeStatusLevel" style="@style/Label" android:layout_width="100dip"/>
+			<EditText android:layout_weight="1" android:inputType="number" android:layout_height="wrap_content" android:id="@+id/editTextLevel" android:layout_width="fill_parent" android:imeOptions="actionNext" android:maxLength="2" android:text="@string/StatusLevelDefault"/>
+		</LinearLayout>
+			
+		<LinearLayout android:layout_below="@id/linearLayoutLevel" android:layout_height="wrap_content" android:id="@+id/linearLayoutWins" android:layout_width="fill_parent">
+			<TextView android:id="@+id/ChangeStatusWinsLabel"
+			android:layout_height="wrap_content"
+			android:text="@string/ChangeStatusWins" style="@style/Label" android:layout_width="100dip"/>
+			<EditText android:layout_weight="1" android:inputType="number" android:layout_height="wrap_content" android:id="@+id/editTextWins" android:layout_width="fill_parent" android:imeOptions="actionNext" android:maxLength="5" android:text="@string/StatusWinsDefault"/>
+		</LinearLayout>
+		
+		<LinearLayout android:layout_below="@id/linearLayoutWins" android:layout_height="wrap_content" android:id="@+id/linearLayoutLeaves" android:layout_width="fill_parent">
+			<TextView android:id="@+id/ChangeStatusLeavesLabel"
+			android:layout_height="wrap_content"
+			android:text="@string/ChangeStatusLeaves" style="@style/Label" android:layout_width="100dip"/>
+			<EditText android:layout_weight="1" android:inputType="number" android:layout_height="wrap_content" android:id="@+id/editTextLeaves" android:layout_width="fill_parent" android:imeOptions="actionNext" android:maxLength="5" android:text="@string/StatusLeavesDefault"/>
+		</LinearLayout>
+			
+		<LinearLayout android:layout_below="@id/linearLayoutLeaves" android:layout_height="wrap_content" android:id="@+id/linearLayoutMsg" android:layout_width="fill_parent">
+			<TextView android:id="@+id/ChangeStatusMsgLabel"
+			android:layout_height="wrap_content"
+			android:text="@string/ChangeStatusMsg" style="@style/Label" android:layout_width="100dip"/>
+			<EditText android:layout_weight="1" android:layout_height="wrap_content" android:id="@+id/editTextMsg" android:layout_width="fill_parent" android:inputType="textCapSentences|textAutoComplete|textAutoCorrect" android:imeOptions="actionDone" android:text="@string/StatusMsgDefault"/>
+		</LinearLayout>	
+			
+		<EditText android:id="@+id/ChangeStatusMessage"
+			android:inputType="textShortMessage|textAutoCorrect"
+			android:imeOptions="actionDone" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" 
+			android:layout_marginBottom="18dp" android:visibility="gone"/>
+		<Spinner android:id="@+id/ChangeStatusSpinner"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:drawSelectorOnTop="true"
+			android:contentDescription="@string/ChangeStatusType" android:visibility="gone"/>
+	</RelativeLayout>
+	
+</ScrollView>
+<RelativeLayout
+	android:layout_alignParentBottom="true"
+	android:gravity="right"
+	android:layout_height="wrap_content"
+	android:layout_width="fill_parent"
+	android:background="@drawable/bottombar" >
+
+<Button
+	    android:id="@+id/OpenContactList"
+	    android:text="@string/OpenContactList"
+	    android:minWidth="100dp"
+	    android:layout_height="wrap_content"
+	    android:layout_width="wrap_content"
+	    android:drawableLeft="@drawable/button_indicator_prev"
+	    android:layout_alignParentLeft="true"
+	    android:layout_centerVertical="true"
+	    />
+
+	<Button
+            android:id="@+id/ChangeStatusOk"
+            android:text="@string/UpdateButton"
+            android:minWidth="100dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            />
+
+	
+    </RelativeLayout>
+</LinearLayout>
