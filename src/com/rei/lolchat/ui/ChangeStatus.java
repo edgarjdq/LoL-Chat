@@ -378,7 +378,7 @@ public class ChangeStatus extends Activity {
         		"<level>"+level+"</level>" +
         		"<wins>"+wins+"</wins>" +
         		"<leaves>"+leaves+"</leaves>" +
-        		"<queueType />" +
+        		
         		"<rankedWins>0</rankedWins>" +
         		"<rankedLosses>0</rankedLosses><rankedRating>0</rankedRating>" +
         		"<statusMsg>"+msg+"</statusMsg></body>";

@@ -826,8 +826,9 @@ public class ContactList extends Activity {
 		    	String level = mSettings.getString(BeemApplication.LEVEL_KEY, "");
 		    	String wins = mSettings.getString(BeemApplication.WINS_KEY, "");
 		    	String leaves = mSettings.getString(BeemApplication.LEAVES_KEY, "");
+		    	String picon = mSettings.getString(BeemApplication.PROFILE_KEY, "");
 		        String lolXml = "<body><gameStatus>outOfGame</gameStatus>" +
-		        		"<profileIcon>28</profileIcon>" +
+		        		"<profileIcon>"+picon+"</profileIcon>" +
 		        		"<level>"+level+"</level>" +
 		        		"<wins>"+wins+"</wins>" +
 		        		"<leaves>"+leaves+"</leaves>" +
