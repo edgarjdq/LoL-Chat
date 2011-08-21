@@ -15,6 +15,7 @@
 	<TextView android:id="@+id/chatmessagetext"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_alignParentLeft="true" android:layout_below="@id/chatmessagename"
-		android:autoLink="all" />
+		android:autoLink="all" /> 
+	<Button android:text="Button" android:id="@+id/join_game" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"></Button>
 </RelativeLayout>
 

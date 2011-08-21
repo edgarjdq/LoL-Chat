@@ -42,21 +42,26 @@
 */
 package com.rei.lolchat.ui;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.io.InputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 
 import org.jivesoftware.smack.util.StringUtils;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -83,6 +88,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.FrameLayout;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -144,6 +150,7 @@ public class ContactList extends Activity {
     private BeemBanner mAdapterBanner;
     private boolean mBinded;
     private int avatars = R.drawable.profile0;
+    static final int USER_STATS = 1;
     /**
      * Constructor.
      */
@@ -204,9 +211,45 @@ public class ContactList extends Activity {
 	} catch (RemoteException e) {
 	    e.printStackTrace();
 	}
-	menu.setHeaderTitle(mSelectedContact.getJID());
+	menu.setHeaderTitle(mSelectedContact.getName());
     }
-
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        switch (id) {
+            case USER_STATS:
+            	dialog.setContentView(R.layout.dialog_stats);
+            	dialog.setTitle(mSelectedContact.getName() + " " + getString(R.string.CDInfos));
+            	TextView text = (TextView) dialog.findViewById(R.id.text);
+            	String gameStatus = mSelectedContact.getGameStatus();
+            	String gameStats = "";
+            	if(gameStatus.equals(BeemApplication.IN_GAME)){
+            		
+            		gameStats = 
+    	        		"\n\nGame Status: "	+ mSelectedContact.getGameStatus() +
+    	    			"\nChampion: "	+ mSelectedContact.getSkinname() +
+    	    			"\nDuration: "	+ mSelectedContact.getDuration();
+            		
+            	} 
+            	text.setText(
+            			"Level: " 	+ mSelectedContact.getLevel() + 
+            			"\nWins: "	+ mSelectedContact.getWins() + 
+            			"\nLeaves: "	+ mSelectedContact.getLeaves() + 
+            			"\nRanked Wins: "	+ mSelectedContact.getRankedWins() + 
+            			"\nRanked Losses: "	+ mSelectedContact.getRankedLosses() +
+            			"\nRanked Rating: "	+ mSelectedContact.getRankedRating() +
+            			gameStats
+            			 
+            	);
+            	ImageView image = (ImageView) dialog.findViewById(R.id.image);
+            	image.setImageResource(R.drawable.icon);
+                break;
+        }
+    }
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog = new Dialog(this);
+        
+        return dialog;
+    }
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 	Intent in;
@@ -236,32 +279,8 @@ public class ContactList extends Activity {
 		    result = true;
 		    break;
 		case R.id.contact_list_context_menu_user_info:
-		    item.getSubMenu().setHeaderTitle(mSelectedContact.getJID());
-		    result = true;
-		    break;
-		case R.id.contact_list_context_menu_userinfo_alias:
-		    Dialog alias = new Alias(ContactList.this, mRoster, mSelectedContact).create();
-		    alias.show();
-		    result = true;
-		    break;
-		case R.id.contact_list_context_menu_userinfo_group:
-		    in = new Intent(this, GroupList.class);
-		    in.putExtra("contact", mSelectedContact);
-		    startActivity(in);
-		    result = true;
-		    break;
-		case R.id.contact_list_context_menu_userinfo_subscription:
-		    Dialog subscription = new ResendSubscription(ContactList.this,
-			mXmppFacade, mSelectedContact).create();
-		    subscription.show();
-		    result = true;
-		    break;
-		case R.id.contact_list_context_menu_userinfo_block:
-		    result = true;
-		    break;
-		case R.id.contact_list_context_menu_userinfo_delete:
-		    Dialog delete = new DeleteContact(ContactList.this, mRoster, mSelectedContact).create();
-		    delete.show();
+			showDialog(USER_STATS);
+			
 		    result = true;
 		    break;
 		default:
@@ -272,7 +291,7 @@ public class ContactList extends Activity {
 	}
 	return super.onContextItemSelected(item);
     }
-
+    
     @Override
     protected void onCreate(Bundle saveBundle) {
 	super.onCreate(saveBundle);
@@ -656,14 +675,31 @@ public class ContactList extends Activity {
 	 */
 	private void bindView(View view, Contact curContact) {
 	    if (curContact != null) {
-			TextView v = (TextView) view.findViewById(R.id.contactlistpseudo);
+			TextView v = (TextView) view.findViewById(R.id.duration);
 			String lvl = "";
 			if(curContact.getLevel() != null){
 				lvl = "["+curContact.getLevel()+"] ";
 			}
-			
-			
+			ImageView champ = (ImageView) view.findViewById(R.id.champ);
+			FrameLayout ingame = (FrameLayout) view.findViewById(R.id.ingame);
+			if(curContact.getSkinname() != null 
+					&& !curContact.getSkinname().equals("") 
+					&& curContact.getGameStatus().equals(BeemApplication.IN_GAME)
+					){
+				
+				v.setText(curContact.getDuration());
+				ingame.setVisibility(View.VISIBLE);
+				Drawable champion = getChampDrawable( curContact.getSkinname() );
+				champ.setImageDrawable(champion);
+			}else{
+				ingame.setVisibility(View.GONE);
+			}
+			 
+			v = (TextView) view.findViewById(R.id.contactlistpseudo); 
 			v.setText(lvl+curContact.getName());
+			
+			
+			
 			v = (TextView) view.findViewById(R.id.contactlistmsgperso);
 			if(curContact.getMsg() != null){
 				String gameStatus = "";
@@ -705,7 +741,10 @@ public class ContactList extends Activity {
 	    ld.setDrawableByLayerId(R.id.avatar, avatarDrawable);
 	    return ld;
 	}
-
+	private Drawable getChampDrawable(String champ){
+		Drawable c = getResources().getDrawable(getResources().getIdentifier("champ_"+champ.toLowerCase()+"_square_0", "drawable", getPackageName()));
+		return c;
+	}
 	/**
 	 * A Filter which select Contact to display by searching in ther Jid.
 	 */
@@ -826,7 +865,7 @@ public class ContactList extends Activity {
 		    	String level = mSettings.getString(BeemApplication.LEVEL_KEY, "");
 		    	String wins = mSettings.getString(BeemApplication.WINS_KEY, "");
 		    	String leaves = mSettings.getString(BeemApplication.LEAVES_KEY, "");
-		    	String picon = mSettings.getString(BeemApplication.PROFILE_KEY, "");
+		    	int picon = mSettings.getInt(BeemApplication.PROFILE_KEY, 23);
 		        String lolXml = "<body><gameStatus>outOfGame</gameStatus>" +
 		        		"<profileIcon>"+picon+"</profileIcon>" +
 		        		"<level>"+level+"</level>" +

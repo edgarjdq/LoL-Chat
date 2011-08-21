@@ -28,7 +28,7 @@
 <!--  ContactDialog class -->
 <string name="CDChat">Chatta</string>
 <string name="CDCall">Ring</string>
-<string name="CDInfos">Hantera kontakt</string>
+<string name="CDInfos">statistik</string>
 
 <!-- AddContact class -->
 <string name="AddCActTitle">LoL Chat - Lägg till kontakt</string>

@@ -45,7 +45,7 @@ package com.rei.lolchat.service.aidl;
 
 import com.rei.lolchat.service.Message;
 import com.rei.lolchat.service.aidl.IChat;
-
+import  com.rei.lolchat.service.aidl.IChatMUC;
 interface IMessageListener {
 
 	/**
@@ -54,7 +54,7 @@ interface IMessageListener {
 	 * @param msg the message received in the chat.
 	 */
 	void processMessage(in IChat chat, in Message msg);
-
+	void processMUCMessage(in IChatMUC chat, in Message msg);
 	/**
 	 * This method is executed when a new ChatState is received by the chat.
 	 * You can use IChat.getState() in order to get the new state.

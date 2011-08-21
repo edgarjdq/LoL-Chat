@@ -113,8 +113,6 @@ public class ChatAdapter extends IChat.Stub {
 	send.setThread(message.getThread());
 	send.setSubject(message.getSubject());
 	send.setType(org.jivesoftware.smack.packet.Message.Type.chat);
-	// TODO gerer les messages contenant des XMPPError
-	// send.set
 	try {
 	    mAdaptee.sendMessage(send);
 	    mMessages.add(message);

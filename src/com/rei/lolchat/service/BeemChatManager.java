@@ -52,6 +52,8 @@ import java.util.Map;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ChatManagerListener;
+import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -66,6 +68,7 @@ import android.util.Log;
 import com.rei.lolchat.BeemApplication;
 import com.rei.lolchat.BeemService;
 import com.rei.lolchat.service.aidl.IChat;
+import com.rei.lolchat.service.aidl.IChatMUC;
 import com.rei.lolchat.service.aidl.IChatManager;
 import com.rei.lolchat.service.aidl.IChatManagerListener;
 import com.rei.lolchat.service.aidl.IMessageListener;
@@ -80,6 +83,7 @@ public class BeemChatManager extends IChatManager.Stub {
     private static final String TAG = "BeemChatManager";
     private final ChatManager mAdaptee;
     private final Map<String, ChatAdapter> mChats = new HashMap<String, ChatAdapter>();
+    private final Map<String, ChatMUCAdapter> mMUCChats = new HashMap<String, ChatMUCAdapter>();
     private final ChatListener mChatListener = new ChatListener();
     private final RemoteCallbackList<IChatManagerListener> mRemoteChatCreationListeners =
 	new RemoteCallbackList<IChatManagerListener>();
@@ -135,7 +139,35 @@ public class BeemChatManager extends IChatManager.Stub {
 	result.addMessageListener(listener);
 	return result;
     }
-
+    /**
+     * Create a MUC chat session.
+     * @param jid the jid of the MUC
+     * @param listener listener to use for chat events on this chat session
+     * @return the chat session
+     */
+    public IChatMUC createMUCChat(Contact contact, IMessageListener listener) {
+	String jid = contact.getJIDWithRes();
+	Log.d(TAG, "Get chat key1 = ");
+	return createMUCChat(jid, listener);
+    }
+    
+    public IChatMUC createMUCChat(String jid, IMessageListener listener) {
+		String key = StringUtils.parseBareAddress(jid);
+		String nick = StringUtils.parseResource(jid);
+		ChatMUCAdapter result;
+		Log.d(TAG, "Get chat key2 = "+jid);
+		if (mMUCChats.containsKey(key)) {
+		    result = mMUCChats.get(key);
+		    result.addMessageListener(listener);
+		    return result;
+		}
+		MultiUserChat c = new MultiUserChat(mService.getmConnection().getAdaptee(),key);
+		result = new ChatMUCAdapter(c, mService, nick);
+		mMUCChats.put(key, result);
+		result.addMessageListener(listener);
+		result.addMessageListener(mChatListener);
+		return result;
+    }
     /**
      * {@inheritDoc}
      */
@@ -148,7 +180,14 @@ public class BeemChatManager extends IChatManager.Stub {
 	deleteChatNotification(chat);
 	mChats.remove(chat.getParticipant().getJID());
     }
-
+    @Override
+    public void destroyMUCChat(IChatMUC chat) throws RemoteException {
+		if (chat == null)
+		    return;
+		((ChatMUCAdapter)chat).getAdaptee().leave() ;
+		mMUCChats.remove(chat.getRoom().getJID());
+		
+    }
     /**
      * {@inheritDoc}
      */
@@ -188,9 +227,13 @@ public class BeemChatManager extends IChatManager.Stub {
     }
 
     @Override
-    public ChatAdapter getChat(Contact contact) {
-	String key = contact.getJIDWithRes();
-	return mChats.get(key);
+	public ChatAdapter getChat(Contact contact) {
+		String key = contact.getJIDWithRes();
+		return mChats.get(key);
+	 }
+	public ChatMUCAdapter getMUCChat(Contact contact) {
+		String key = contact.getJID();
+    	return mMUCChats.get(key);
     }
 
     /**
@@ -204,9 +247,9 @@ public class BeemChatManager extends IChatManager.Stub {
 
 	for (ChatAdapter chat : mChats.values()) {
 	    if (chat.getMessages().size() > 0) {
-		Contact t = mRoster.getContact(chat.getParticipant().getJID());
+	    	Contact t = mRoster.getContact(chat.getParticipant().getJIDWithRes());
 		if (t == null)
-		    t = new Contact(chat.getParticipant().getJID());
+			t = new Contact(chat.getParticipant().getJIDWithRes());
 		openedChats.add(t);
 	    }
 	}
@@ -262,15 +305,11 @@ public class BeemChatManager extends IChatManager.Stub {
 	 * @param chat A ChatAdapter instance
 	 * @return A Chat activity PendingIntent
 	 */
-	private PendingIntent makeChatIntent(IChat chat) {
+	private PendingIntent makeChatIntent(Contact c) {
 	    Intent chatIntent = new Intent(mService, com.rei.lolchat.ui.Chat.class);
 	    chatIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP
 		| Intent.FLAG_ACTIVITY_NEW_TASK);
-	    try {
-		chatIntent.setData(chat.getParticipant().toUri());
-	    } catch (RemoteException e) {
-		Log.e(TAG, e.getMessage());
-	    }
+	    chatIntent.setData(c.toUri());
 	    PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, chatIntent,
 		PendingIntent.FLAG_UPDATE_CURRENT);
 	    return contentIntent;
@@ -281,27 +320,51 @@ public class BeemChatManager extends IChatManager.Stub {
 	 * @param chat The chat to access by the notification
 	 * @param msgBody the body of the new message
 	 */
-	private void notifyNewChat(IChat chat, String msgBody) {
-	    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mService);
-	    try {
-		CharSequence tickerText = mService.getBind().getRoster().getContact(chat.getParticipant().getJID())
-		    .getName();
+	private void notifyNewChat(Contact c, String msgBody) {
+        CharSequence tickerText = "";
+		try {
+			tickerText = mService.getBind().getRoster().getContact(c.getName()).getName();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Notification notification = new Notification(com.rei.lolchat.R.drawable.ic_stat_lol, tickerText, System
 		    .currentTimeMillis());
 		notification.flags = Notification.FLAG_AUTO_CANCEL;
-		notification.setLatestEventInfo(mService, tickerText, msgBody, makeChatIntent(chat));
-		mService.sendNotification(chat.getParticipant().getJID().hashCode(), notification);
-	    } catch (RemoteException e) {
-		Log.e(TAG, e.getMessage());
-	    }
+		notification.setLatestEventInfo(mService, tickerText, msgBody, makeChatIntent(c));
+		mService.sendNotification(c.getJID().hashCode(), notification);
 	}
-
+	/**
+     * Set a notification of a new chat.
+     * @param chat The chat to access by the notification
+     */
+    private void notifyNewChat(IChat chat, String msgBody) {
+        try {
+            notifyNewChat(chat.getParticipant(), msgBody);
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+   /**
+    * Set a notification of a MUC chat.
+    * @param chat The chat to access by the notification
+    */
+   private void notifyMUCChat(IChatMUC chat, String msgBody) {
+       Log.d(TAG,"poeuet") ;
+       try {
+               notifyNewChat(chat.getRoom(), msgBody) ;
+           } catch (RemoteException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+           }
+    }
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void processMessage(final IChat chat, Message message) {
-	    try {
+		try {
 		String body = message.getBody();
 		if (!chat.isOpen() && body != null) {
 		    if (chat instanceof ChatAdapter) {
@@ -313,7 +376,15 @@ public class BeemChatManager extends IChatManager.Stub {
 		Log.e(TAG, e.getMessage());
 	    }
 	}
-
+	@Override
+    public void processMUCMessage(IChatMUC chat, Message message)
+        throws RemoteException {
+        String body = message.getBody();
+		boolean onlyhl = PreferenceManager.getDefaultSharedPreferences(mService).getBoolean("notification_hls", false) ;
+		if (!chat.isOpen() && message.getBody() != null && ( message.isHL() || !onlyhl)) {
+             notifyMUCChat(chat, body) ;
+        }
+    }
 	@Override
 	public void stateChanged(final IChat chat) {
 	}

@@ -28,7 +28,7 @@
 <!--  ContactDialog class -->
 <string name="CDChat">Chatten</string>
 <string name="CDCall">Anrufen</string>
-<string name="CDInfos">Kontakt bearbeiten</string>
+<string name="CDInfos">Statistiken</string>
 
 <!-- AddContact class -->
 <string name="AddCActTitle">LoL Chat - Kontakt hinzufügen</string>

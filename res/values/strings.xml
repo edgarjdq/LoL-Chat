@@ -31,7 +31,7 @@
 	<!--  ContactDialog class -->
 	<string name="CDChat">Chat</string>
 	<string name="CDCall">Call</string>
-	<string name="CDInfos">Manage User</string>
+	<string name="CDInfos">Statistics</string>
 
 	<!-- AddContact class -->
 	<string name="AddCActTitle">LoL Chat - Add a contact</string>

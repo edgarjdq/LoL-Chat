@@ -45,9 +45,12 @@ package com.rei.lolchat.service;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -116,7 +119,7 @@ public class Contact implements Parcelable {
     private final List<String> mGroups = new ArrayList<String>();
     private String mName;
     private String mAvatarId;
-
+    private boolean mIsMUC;
     /**
      * Construct a contact from a parcel.
      * @param in parcel to use for construction
@@ -159,7 +162,14 @@ public class Contact implements Parcelable {
 	if (!"xmpp".equals(uri.getScheme()))
 	    throw new IllegalArgumentException();
 	String enduri = uri.getEncodedSchemeSpecificPart();
-	mJID = StringUtils.parseBareAddress(enduri);
+	String fjid = StringUtils.parseBareAddress(enduri);
+	if (fjid.charAt(0) == '$') {
+		mJID = fjid.substring(1) ;
+		mIsMUC = true ;
+	} else {
+        mJID = fjid ;
+		mIsMUC = false ;
+	}
 	mName = mJID;
 	mStatus = Status.CONTACT_STATUS_DISCONNECT;
 	mMsgState = null;
@@ -169,7 +179,10 @@ public class Contact implements Parcelable {
 	mSelectedRes = res;
 	mRes.add(res);
     }
-
+    public Contact(final String jid, boolean isMuc) {
+    	this(jid) ;
+    	this.mIsMUC = true ;
+    }
     /**
      * Make an xmpp uri for a spcific jid.
      *
@@ -304,6 +317,44 @@ public class Contact implements Parcelable {
     public String getLevel() {
 	return mLevel;
     }
+    public String getLeaves() {
+    	return mLeaves;
+        }
+    public String getRankedWins() {
+    	return mRankedWins;
+        }
+    public String getRankedLosses() {
+    	return mRankedLosses;
+        }
+    public String getRankedRating() {
+    	return mRankedRating;
+        }
+    public String getSkinname() {
+    	return mSkinname;
+        }
+    public Timestamp getTimeStamp() {
+    	long unixTime = Long.parseLong(mTimeStamp);  
+    	long timestamp = unixTime; 
+    	Timestamp d = new Timestamp(timestamp);  
+    	return d;
+        }
+    public String getWins() {
+    	return mWins;
+        }
+    public String getDuration(){
+    	String diff = "";
+		Date t1 = (Date) getTimeStamp();
+		Date t2 = (Date) new Timestamp(System.currentTimeMillis());
+		
+		long timeDiff = Math.abs(t1.getTime() - t2.getTime());
+		long difference = TimeUnit.MILLISECONDS.toSeconds(timeDiff) / 60;
+		String plural = "";
+		if(difference > 2)
+			plural = "s";
+		diff = String.format("%d min"+plural, difference );
+		return diff;
+    }
+    
     public String getMsg() {
     	return mStatusMsg;
     }
@@ -325,7 +376,12 @@ public class Contact implements Parcelable {
     public int getStatus() {
 	return mStatus;
     }
-
+    /**
+     * Return whether the contact is a MUC room or not
+     */
+    public boolean isMUC() {
+    	return mIsMUC ;
+    }
     /**
      * Get the avatar id of the contact.
      *
@@ -515,6 +571,9 @@ public class Contact implements Parcelable {
      */
     public Uri toUri(String resource) {
 	StringBuilder build = new StringBuilder("xmpp:");
+	if (this.isMUC()) {
+		build.append("$") ;
+	}
 	String name = StringUtils.parseName(mJID);
 	build.append(name);
 	if (!"".equals(name))

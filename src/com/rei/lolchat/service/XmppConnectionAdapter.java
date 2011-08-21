@@ -422,6 +422,7 @@ public class XmppConnectionAdapter extends IXmppConnection.Stub {
 	mStatusNotification.setLatestEventInfo(mService, "LoL Chat", text, PendingIntent.getActivity(mService, 0,
 	    clickIntent, 0));
 	// bypass the preferences for notification
+	System.setProperty("http.keepAlive", "true");
 	mService.startForeground(BeemService.NOTIFICATION_STATUS_ID, mStatusNotification);
     }
 

@@ -47,7 +47,7 @@ import  com.rei.lolchat.service.Contact;
 import  com.rei.lolchat.service.aidl.IChat;
 import  com.rei.lolchat.service.aidl.IMessageListener;
 import  com.rei.lolchat.service.aidl.IChatManagerListener;
-
+import  com.rei.lolchat.service.aidl.IChatMUC;
 /**
  * Aidl interface for a chat manager.
  * The chat manager will manage all the chat sessions.
@@ -61,19 +61,20 @@ interface IChatManager {
     	 * @return 		the chat session
     	 */
 	IChat createChat(in Contact contact, in IMessageListener listener);
-
+	IChatMUC createMUCChat(in Contact contact, in IMessageListener listener);
 	/**
 	 * Get an existing Chat session with a contact.
 	 * @return null if the chat session does not exist.
 	 */
 	IChat getChat(in Contact contact);
+	IChatMUC getMUCChat(in Contact contact);
 
 	/**
     	 * Destroy a chat session with a contact.
     	 * @param chat	the chat session
     	 */
 	void destroyChat(in IChat chat);
-
+	void destroyMUCChat(in IChatMUC chat);
         /**
 	 * @param chat the chat.
          */

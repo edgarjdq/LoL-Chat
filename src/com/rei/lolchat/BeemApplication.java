@@ -44,6 +44,9 @@
 
 package com.rei.lolchat;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -143,7 +146,10 @@ public class BeemApplication extends Application {
         R.drawable.profile28
         
     };
-
+    public static final Map<String, Map<String, String>> CHAMPS = new HashMap<String, Map<String, String>>();
+    public static final String IN_GAME = "inGame";
+    public static final String OUT_OF_GAME = "outOfGame";
+    
     private boolean mIsConnected;
     private boolean mIsAccountConfigured;
     private boolean mPepEnabled;
@@ -164,6 +170,7 @@ public class BeemApplication extends Application {
 	String password = mSettings.getString(BeemApplication.ACCOUNT_PASSWORD_KEY, "");
 	mIsAccountConfigured = !("".equals(login) || "".equals(password));
 	mSettings.registerOnSharedPreferenceChangeListener(mPreferenceListener);
+	
     }
 
     @Override

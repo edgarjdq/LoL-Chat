@@ -28,7 +28,7 @@
 <!--  ContactDialog class -->
 <string name="CDChat">聊天</string>
 <string name="CDCall">呼叫</string>
-<string name="CDInfos">用户管理</string>
+<string name="CDInfos">统计</string>
 
 <!-- AddContact class -->
 <string name="AddCActTitle">LoL Chat - 添加连接</string>

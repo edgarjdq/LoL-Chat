@@ -46,10 +46,28 @@ package com.rei.lolchat.service;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.packet.DelayInformation;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import com.rei.lolchat.ui.Chat;
+
+import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Date;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * This class represents a instant message.
@@ -90,9 +108,20 @@ public class Message implements Parcelable {
     private String mFrom;
     private String mThread;
     private Date mTimestamp;
-
-    // TODO ajouter l'erreur
-
+    private boolean mHL ;
+    
+    //some lol specific stuff
+    private boolean isInvite;
+    private String mBodyXml;
+    private String inviteId;
+    private String userName;
+    private String profileIconId;
+    private String gameType;
+    private String mapId;
+    private String queueId;
+    private String gameDifficulty;
+    private Context context ;
+    
     /**
      * Constructor.
      * @param to the destinataire of the message
@@ -106,6 +135,7 @@ public class Message implements Parcelable {
 	mThread = "";
 	mFrom = null;
 	mTimestamp = new Date();
+	mHL = false;
     }
 
     /**
@@ -121,63 +151,120 @@ public class Message implements Parcelable {
      * @param smackMsg Smack message packet
      */
     public Message(final org.jivesoftware.smack.packet.Message smackMsg) {
-	this(smackMsg.getTo());
-	switch (smackMsg.getType()) {
-	    case chat:
-		mType = MSG_TYPE_CHAT;
-		break;
-	    case groupchat:
-		mType = MSG_TYPE_GROUP_CHAT;
-		break;
-	    case normal:
-		mType = MSG_TYPE_NORMAL;
-		break;
-	    // TODO gerer les message de type error
-	    // this a little work around waiting for a better handling of error
-	    // messages
-	    case error:
-		mType = MSG_TYPE_ERROR;
-		break;
-	    default:
-		mType = MSG_TYPE_NORMAL;
-		break;
-	}
-	this.mFrom = smackMsg.getFrom();
-	//TODO better handling of error messages
-	if (mType == MSG_TYPE_ERROR) {
-	    XMPPError er = smackMsg.getError();
-	    String msg = er.getMessage();
-	    if (msg != null)
-		mBody = msg;
-	    else
-		mBody = er.getCondition();
-	} else {
-	    mBody = smackMsg.getBody();
-	    mSubject = smackMsg.getSubject();
-	    mThread = smackMsg.getThread();
-	}
-	PacketExtension pTime = smackMsg.getExtension("delay", "urn:xmpp:delay");
-	if (pTime instanceof DelayInformation) {
-	    mTimestamp = ((DelayInformation) pTime).getStamp();
-	} else {
-	    mTimestamp = new Date();
-	}
+		this(smackMsg.getTo());
+		switch (smackMsg.getType()) {
+		    case chat:
+			mType = MSG_TYPE_CHAT;
+			break;
+		    case groupchat:
+			mType = MSG_TYPE_GROUP_CHAT;
+			break;
+		    case normal:
+			mType = MSG_TYPE_NORMAL;
+			break;
+		    case error:
+			mType = MSG_TYPE_ERROR;
+			break;
+		    default:
+			mType = MSG_TYPE_NORMAL;
+			break;
+		}
+		this.mFrom = smackMsg.getFrom();
+		mHL = false;
+		//TODO better handling of error messages
+		if (mType == MSG_TYPE_ERROR) {
+		    XMPPError er = smackMsg.getError();
+		    String msg = er.getMessage();
+		    if (msg != null)
+			mBody = msg;
+		    else
+			mBody = er.getCondition();
+		} else {
+		    mBody = smackMsg.getBody();
+		    mSubject = smackMsg.getSubject();
+		    mThread = smackMsg.getThread();
+		    
+		    int charCount = mBody.replaceAll("[^>]", "").length();
+			if(charCount > 10){//if there are more than 10 > in this string, its probably xml...
+				DocumentBuilder db = null;
+				try {
+					db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				} catch (ParserConfigurationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (FactoryConfigurationError e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			    InputSource is = new InputSource();
+			    is.setCharacterStream(new StringReader(mBody));
+			    
+			    Document doc = null;
+				try {
+					doc = db.parse(is);
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				isInvite = true;
+				inviteId = getTagValue("inviteId", doc);	
+				userName = getTagValue("userName", doc);	
+				profileIconId = getTagValue("profileIconId", doc);	
+				gameType = getTagValue("gameType", doc);	
+				mapId = getTagValue("mapId", doc);	
+				queueId = getTagValue("queueId", doc);	
+				gameDifficulty = getTagValue("gameDifficulty", doc);
+				mBodyXml = mBody;	
+				
+				mBody = mSubject+": "+gameType + " " + gameDifficulty;
+				
+			}
+		}
+		PacketExtension pTime = smackMsg.getExtension("delay", "urn:xmpp:delay");
+		if (pTime instanceof DelayInformation) {
+		    mTimestamp = ((DelayInformation) pTime).getStamp();
+		} else {
+		    mTimestamp = new Date();
+		}
+	    }
+	
+	    /**
+	     * Construct a message from a parcel.
+	     * @param in parcel to use for construction
+	     */
+	    private Message(final Parcel in) {
+		mType = in.readInt();
+		mTo = in.readString();
+		mBody = in.readString();
+		mSubject = in.readString();
+		mThread = in.readString();
+		mFrom = in.readString();
+		mTimestamp = new Date(in.readLong());
+		mHL = false;
+		isInvite = false;
+		inviteId = "";
+	    userName = "";
+	    profileIconId = "";
+	    gameType = "";
+	    mapId = "";
+	    queueId = "";
+	    gameDifficulty = "";
+	
     }
-
-    /**
-     * Construct a message from a parcel.
-     * @param in parcel to use for construction
-     */
-    private Message(final Parcel in) {
-	mType = in.readInt();
-	mTo = in.readString();
-	mBody = in.readString();
-	mSubject = in.readString();
-	mThread = in.readString();
-	mFrom = in.readString();
-	mTimestamp = new Date(in.readLong());
+    private static String getTagValue(String tag, Document doc) {
+        Element firstElementWithName = (Element) doc.getElementsByTagName(tag).item(0);
+        String value = "";
+        if(firstElementWithName != null){
+	        Node firstChild = firstElementWithName.getFirstChild() ;
+	        if(firstChild == null) return "";
+	        value = firstChild.getNodeValue() ;
+        }
+        return value ;
     }
-
     /**
      * {@inheritDoc}
      */
@@ -214,9 +301,24 @@ public class Message implements Parcelable {
      * @return the Body of the message
      */
     public String getBody() {
-	return mBody;
+    	return mBody;
+    }
+    public String getBodyXml(){
+    	return mBodyXml;
+    }
+    public boolean isInvite() {
+    	return isInvite;
     }
 
+    public String getgameType() {
+    	return gameType;
+    }
+    public String getinviteId() {
+    	return inviteId;
+    }
+    public String getgameDifficulty() {
+    	return gameDifficulty;
+    }
     /**
      * Set the body of the message.
      * @param body the body to set
@@ -315,5 +417,10 @@ public class Message implements Parcelable {
 	// TODO Auto-generated method stub
 	return 0;
     }
-
+    public void setHL(boolean mHL) {
+		this.mHL = mHL;
+	}
+	public boolean isHL() {
+		return mHL;
+	}
 }

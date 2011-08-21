@@ -28,7 +28,7 @@
 <!--  ContactDialog class -->
 <string name="CDChat">Написать</string>
 <string name="CDCall">Повонить</string>
-<string name="CDInfos">Настройки</string>
+<string name="CDInfos">статистика</string>
 
 <!-- AddContact class -->
 <string name="AddCActTitle">Добавление контакта</string>

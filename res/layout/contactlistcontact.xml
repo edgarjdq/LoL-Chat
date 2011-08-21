@@ -18,7 +18,7 @@
 	android:drawablePadding="12px"
 	android:paddingLeft="10dip"
 	android:textSize="18sp" android:textStyle="bold" />
-
+ 
     <TextView android:id="@+id/contactlistmsgperso"
 	android:layout_width="fill_parent" android:layout_height="wrap_content"
 	android:layout_below="@id/contactlistpseudo"
@@ -27,4 +27,29 @@
 	android:maxLines="1" android:linksClickable="false" android:autoLink="all"
 	android:scrollHorizontally="true" android:textColorLink="@color/white"
 	android:textSize="12sp" />
+	
+	<FrameLayout 
+	android:id="@+id/ingame"
+	android:layout_alignParentRight="true"
+	android:layout_alignParentTop="true"
+	android:layout_width="48dip" 
+	android:layout_height="48dip"
+	android:visibility="gone"
+	>
+	<ImageView android:id="@+id/champ"
+	android:layout_width="48dip" android:layout_height="48dip"
+	/>
+	<TextView 
+	android:textSize="12sp"
+	android:textColor="@color/white"
+	android:id="@+id/duration"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:shadowColor="@color/lol_yellow"  
+    android:shadowRadius="2"  
+    android:shadowDx="1"  
+    android:shadowDy="1"  
+    android:paddingTop="31dip"
+	android:layout_gravity="center_horizontal"/>
+	</FrameLayout>
 </RelativeLayout>
