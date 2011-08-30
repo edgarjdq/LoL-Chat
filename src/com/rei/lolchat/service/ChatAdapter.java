@@ -51,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.ChatState;
@@ -112,8 +113,29 @@ public class ChatAdapter extends IChat.Stub {
 	send.setBody(message.getBody());
 	send.setThread(message.getThread());
 	send.setSubject(message.getSubject());
-	send.setType(org.jivesoftware.smack.packet.Message.Type.chat);
+	
+	org.jivesoftware.smack.packet.Message.Type type;
+	switch(message.getType()){
+		case Message.MSG_TYPE_CHAT:
+			type = org.jivesoftware.smack.packet.Message.Type.chat;
+			break;
+		case Message.MSG_TYPE_GROUP_CHAT:
+			type = org.jivesoftware.smack.packet.Message.Type.groupchat;
+			break;
+		case Message.MSG_TYPE_NORMAL:
+			type = org.jivesoftware.smack.packet.Message.Type.normal;
+			break;
+		case Message.MSG_TYPE_ERROR:
+			type = org.jivesoftware.smack.packet.Message.Type.error;
+			break;
+		default:
+			type = org.jivesoftware.smack.packet.Message.Type.normal;
+			break;
+	}
+	Log.i("XMPP", "type: "+type);
+	send.setType(type);
 	try {
+		
 	    mAdaptee.sendMessage(send);
 	    mMessages.add(message);
 	} catch (XMPPException e) {

@@ -689,8 +689,10 @@ public class ContactList extends Activity {
 				
 				v.setText(curContact.getDuration());
 				ingame.setVisibility(View.VISIBLE);
-				Drawable champion = getChampDrawable( curContact.getSkinname() );
-				champ.setImageDrawable(champion);
+				if(curContact.getSkinname() != null && !curContact.getSkinname().equals("")){
+					Drawable champion = getChampDrawable( curContact.getSkinname() );
+					champ.setImageDrawable(champion);
+				}
 			}else{
 				ingame.setVisibility(View.GONE);
 			}

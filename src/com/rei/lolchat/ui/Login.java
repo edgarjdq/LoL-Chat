@@ -45,6 +45,7 @@ package com.rei.lolchat.ui;
 
 import java.util.ArrayList;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -52,6 +53,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -59,9 +61,12 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
@@ -85,7 +90,9 @@ public class Login extends Activity {
     private TextView mTextView;
     private boolean mIsResult;
     private BeemApplication mBeemApplication;
-
+    private TextView tv_na;
+    private TextView tv_eune;
+    private TextView tv_euw;
     /**
      * Constructor.
      */
@@ -137,59 +144,90 @@ public class Login extends Activity {
 		    Toast.makeText(Login.this, tmp, Toast.LENGTH_SHORT).show();
 		    mTextView.setText(tmp);
 		    
-		    ArrayList<Tweet> tweets = loadTweets();
-	        String marq = "";
-	        int i = 1;
-			TextView tv;
-			for(Tweet t: tweets){
-				if(i > 5) break;
-				tv = (TextView) findViewById(getResources().getIdentifier("tweet"+i, "id", getPackageName()));
-				marq = t.content;
-				tv.setText(Html.fromHtml(marq));
-				i++;
-			}
+		    SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(this);
+		    String server = mSettings.getString(BeemApplication.LEVEL_KEY, "");
+		    
+		    tv_na = (TextView) findViewById(R.id.status_na);
+		    tv_eune = (TextView) findViewById(R.id.status_eune);
+		    tv_euw = (TextView) findViewById(R.id.status_euw);
+		    
+		    String text = "";
+		    
+		    text = "<font color='#0099FF'>[US]</font> Checking...";
+			tv_na.setText(Html.fromHtml(text));
+			
+			text = "<font color='#0099FF'>[EU-NE]</font> Checking...";
+			tv_eune.setText(Html.fromHtml(text));
+			
+			text = "<font color='#0099FF'>[EU-W]</font> Checking...";
+			tv_euw.setText(Html.fromHtml(text));
+		   
+			loadServerStatusTask task = new loadServerStatusTask();
+	    	task.execute("na");
+	    	
+	    	loadServerStatusTask task2 = new loadServerStatusTask();
+	    	task2.execute("eune");	
+	    	
+	    	loadServerStatusTask task3 = new loadServerStatusTask();
+	    	task3.execute("euw");
+		    
+		    
 			
 		}
 	    }
 	}
     }
-    public class Tweet {  
-        String author;  
-        String content;
-        String time;
-	}  
-	  
-	private ArrayList<Tweet> loadTweets(){  
-	    ArrayList<Tweet> tweets = new ArrayList<Tweet>();  
-	    try {  
-            HttpClient hc = new DefaultHttpClient();  
-            HttpGet get = new  
-            HttpGet("http://api.twitter.com/1/statuses/user_timeline.json?screen_name=lol_status&count=5&include_entities=false&exclude_replies=true");  
-			HttpResponse rp = hc.execute(get);  
-			if(rp.getStatusLine().getStatusCode() == HttpStatus.SC_OK)  
-			{  
-		        String result = EntityUtils.toString(rp.getEntity());
-		        System.out.println(result);
-		        JSONArray sessions = new JSONArray(result);  
-		        for (int i = 0; i < sessions.length(); i++) {  
-			        JSONObject session = sessions.getJSONObject(i);  
-			        Tweet tweet = new Tweet();  
-			        tweet.content = session.getString("text").replace(" #leagueoflegends", "");
-			        tweet.content = tweet.content.replaceAll("UNAVAILABLE","<font color='red'>UNAVAILABLE</font>");
-			        tweet.content = tweet.content.replaceAll("ONLINE","<font color='green'>ONLINE</font>");
-			        tweet.content = tweet.content.replaceAll("Status changed to ","");
-			        tweet.content = tweet.content.replaceAll(" - ","<br />");
-			        tweet.content = tweet.content.replace("[","<font color='#0099FF'>[");
-			        tweet.content = tweet.content.replace("]","]</font>");
-			        tweet.author = "@googleio";  
-			                        tweets.add(tweet);  
-		        }  
+    
+    private class loadServerStatusTask extends AsyncTask<String, Void, String> {
+		private String s;
+    	protected String doInBackground(String... server) {
+    		s = server[0];
+			String url = "http://ll.leagueoflegends.com/pages/launcher/"+s;
+			String result = "";
+	    	String status = "";
+	    	try {  
+	            HttpClient hc = new DefaultHttpClient();  
+	            HttpGet get = new  
+	            HttpGet(url);  
+				HttpResponse rp = hc.execute(get);  
+				if(rp.getStatusLine().getStatusCode() == HttpStatus.SC_OK)  
+				{  
+			        result = EntityUtils.toString(rp.getEntity());
+			        result = result.replace("refreshContent(", "").replace(");", "");
+			        JSONArray sessions = new JSONArray("["+result+"]");  
+			        
+			        JSONObject session = sessions.getJSONObject(0);  
+			        status = session.getString("serverStatus");
+			        if(status.equals("1")){
+	    				status = "<font color='green'>AVAILABLE</font>";
+	    			}else if(status.equals("0")){
+	    				status = "<font color='red'>UNAVAILABLE</font>";
+	    			}else{
+	    				status = "<font color='red'>No Internet Connection...</font>";
+	    			}
+			    }  
+	    	} catch (Exception e) {  
+		        Log.e("ServerStatusActivity", "Error loading JSON", e);  
+		        status = "<font color='red'>No Internet Connection?</font>";
 	        }  
-    	} catch (Exception e) {  
-        Log.e("TwitterFeedActivity", "Error loading JSON", e);  
-        }  
-        return tweets;  
-	}  
+	        return status;  
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if(s.equals("na")){
+				result = "<font color='#0099FF'>[US]</font> " + result;
+				tv_na.setText(Html.fromHtml(result));
+			}else if(s.equals("eune")){
+				result = "<font color='#0099FF'>[EU-NE]</font> " + result;
+				tv_eune.setText(Html.fromHtml(result));
+			}else if(s.equals("euw")){
+				result = "<font color='#0099FF'>[EU-W]</font> " + result;
+				tv_euw.setText(Html.fromHtml(result));
+			}
+		}
+	}
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	super.onCreateOptionsMenu(menu);

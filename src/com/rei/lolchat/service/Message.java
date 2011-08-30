@@ -184,8 +184,7 @@ public class Message implements Parcelable {
 		    mSubject = smackMsg.getSubject();
 		    mThread = smackMsg.getThread();
 		    
-		    int charCount = mBody.replaceAll("[^>]", "").length();
-			if(charCount > 10){//if there are more than 10 > in this string, its probably xml...
+			if(mSubject.equals("GAME_INVITE") || mSubject.equals("GAME_INVITE_ACK")){
 				DocumentBuilder db = null;
 				try {
 					db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -211,6 +210,7 @@ public class Message implements Parcelable {
 				}
 				
 				isInvite = true;
+				//TODO: isInviteAck = true;
 				inviteId = getTagValue("inviteId", doc);	
 				userName = getTagValue("userName", doc);	
 				profileIconId = getTagValue("profileIconId", doc);	

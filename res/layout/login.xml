@@ -11,42 +11,28 @@
 			android:textColor="#FF0000" android:textStyle="bold"
 			android:textSize="14sp" />
 		
-		<TextView android:id="@+id/tweet0" android:layout_width="fill_parent"
+		<TextView android:id="@+id/status_title" android:layout_width="fill_parent"
 			android:gravity="center"
 			android:textColor="#FFFFFF" android:textStyle="bold"
-			android:textSize="18sp" android:layout_height="wrap_content" android:text="Server Status Timeline"/>
+			android:textSize="18sp" android:layout_height="wrap_content" android:text="Server Statuses"/>
 		<View android:id="@+id/view1" android:layout_width="fill_parent"
-android:layout_height="1dip"
-android:background="@color/lol_yellow" android:layout_marginRight="7dip" android:layout_marginBottom="3dip" android:layout_marginTop="3dip" android:layout_marginLeft="7dip"/>
-		<TextView android:id="@+id/tweet1" android:layout_width="fill_parent"
+			android:layout_height="1dip"
+			android:background="@color/lol_yellow" android:layout_marginRight="7dip" android:layout_marginBottom="3dip" android:layout_marginTop="3dip" android:layout_marginLeft="7dip"/>
+		<TextView android:id="@+id/status_na" android:layout_width="fill_parent"
 			android:gravity="center"
 			android:textColor="#FFFFFF" android:textStyle="bold"
 			android:textSize="14sp" android:layout_height="wrap_content"/>
-				<View android:id="@+id/view1" android:layout_width="fill_parent"
-android:layout_height="1dip"
-android:background="@color/lol_yellow" android:layout_marginRight="7dip" android:layout_marginBottom="3dip" android:layout_marginTop="3dip" android:layout_marginLeft="7dip"/>
-		<TextView android:id="@+id/tweet2" android:layout_width="fill_parent"
+		<View android:id="@+id/view1" android:layout_width="fill_parent"
+			android:layout_height="1dip"
+			android:background="@color/lol_yellow" android:layout_marginRight="7dip" android:layout_marginBottom="3dip" android:layout_marginTop="3dip" android:layout_marginLeft="7dip"/>
+		<TextView android:id="@+id/status_euw" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:gravity="center"
 			android:textColor="#FFFFFF" android:textStyle="bold"
 			android:textSize="14sp" />
 		<View android:id="@+id/view1" android:layout_width="fill_parent"
-android:layout_height="1dip"
-android:background="@color/lol_yellow" android:layout_marginRight="7dip" android:layout_marginBottom="3dip" android:layout_marginTop="3dip" android:layout_marginLeft="7dip"/>	
-		<TextView android:id="@+id/tweet3" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:gravity="center"
-			android:textColor="#FFFFFF" android:textStyle="bold"
-			android:textSize="14sp" />
-		<View android:id="@+id/view1" android:layout_width="fill_parent"
-android:layout_height="1dip"
-android:background="@color/lol_yellow" android:layout_marginRight="7dip" android:layout_marginBottom="3dip" android:layout_marginTop="3dip" android:layout_marginLeft="7dip"/>
-		<TextView android:id="@+id/tweet4" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:gravity="center"
-			android:textColor="#FFFFFF" android:textStyle="bold"
-			android:textSize="14sp" />
-		<View android:id="@+id/view1" android:layout_width="fill_parent"
-android:layout_height="1dip"
-android:background="@color/lol_yellow" android:layout_marginRight="7dip" android:layout_marginBottom="3dip" android:layout_marginTop="3dip" android:layout_marginLeft="7dip"/>
-		<TextView android:id="@+id/tweet5" android:layout_width="fill_parent"
+			android:layout_height="1dip"
+			android:background="@color/lol_yellow" android:layout_marginRight="7dip" android:layout_marginBottom="3dip" android:layout_marginTop="3dip" android:layout_marginLeft="7dip"/>
+		<TextView android:id="@+id/status_eune" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:gravity="center"
 			android:textColor="#FFFFFF" android:textStyle="bold"
 			android:textSize="14sp" />

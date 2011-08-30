@@ -52,6 +52,8 @@ import java.util.Map;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -203,7 +205,7 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	mSendButton.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
-		sendMessage(); 
+	    	sendMessage(); 
 	    }
 	});
 	prepareIconsStatus();
@@ -252,7 +254,7 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	} catch (RemoteException e) {
 	    Log.e(TAG, e.getMessage());
 	}catch (NullPointerException e){
-		Log.e(TAG, e.getMessage());
+		Log.e(TAG, "error? "+e.getMessage());
 	}
 	if (mBinded) {
 	    unbindService(mConn);
@@ -823,8 +825,11 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 		  			    i.setData(c.toUri(pseudo));
 		  			    context.startActivity(i);*/
 	    			  //	
+	    			  mSubject = "GAME_INVITE_LIST_STATUS";
 	    			  mSubject = "GAME_INVITE_ACCEPT";
 	    			  mInviteBody = m.getBodyXml();//.replace(">", "&gt;").replace("<", "&lt;");
+	    			  //mInviteBody = "<body><participants><invitee status=\"ACCEPTED\" name=\"The17\" /></participants></body>";
+	    			  //mInviteBody = "&lt;body&gt;&lt;participants&gt;&lt;invitee status=&quot;ACCEPTED&quot; name=&quot;the17&quot; /&gt;&lt;/participants&gt;&lt;/body&gt;";
 	    			  mInputField.setText(mInviteBody);
 	    			  sendMessage();
 	    			  /*mSubject = "GAME_INVITE_ACCEPT_ACK";
@@ -1052,11 +1057,17 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 		if (mContact.isMUC()) {
 			msgToSend = new Message(mContact.getJID(), Message.MSG_TYPE_GROUP_CHAT);	
 		} else {
-			msgToSend = new Message(mContact.getJIDWithRes(), Message.MSG_TYPE_CHAT);
+			if(mSubject.equals("GAME_INVITE_ACCEPT"))
+				msgToSend = new Message(mContact.getJIDWithRes(), Message.MSG_TYPE_NORMAL);
+			else
+				msgToSend = new Message(mContact.getJIDWithRes(), Message.MSG_TYPE_CHAT);
 		}
-	    msgToSend.setBody(inputContent);
-	    msgToSend.setSubject(mSubject);
-	    msgToSend.setThread("");
+		
+		msgToSend.setSubject(mSubject);
+		msgToSend.setBody(inputContent);
+	    
+		
+		
 	    try {
 	    	if (mContact.isMUC()) {
 	    		IChatMUC mChatMUC = mChatManager.getMUCChat(mContact) ;
@@ -1067,6 +1078,9 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 				    mChat = mChatManager.createChat(mContact, mMessageListener);
 				    mChat.setOpen(true);
 				}
+				Log.i("XMPP", "msgToSend.getSubject(): "+msgToSend.getSubject());
+				Log.i("XMPP", "msgToSend.getBody(): "+msgToSend.getBody());
+				Log.i("XMPP", "msgToSend.getType(): "+msgToSend.getType());
 				mChat.sendMessage(msgToSend);
 			    final String self = getString(R.string.chat_self);
 			    MessageText lastMessage = null;

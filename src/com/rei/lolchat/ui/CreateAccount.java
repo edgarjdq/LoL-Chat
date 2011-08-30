@@ -115,9 +115,11 @@ public class CreateAccount extends Activity {
 	} else {
 	    connectionConfiguration = new ConnectionConfiguration(getXMPPServer(), getXMPPPort());
 	}
-	if (getRegisteredXMPPTLSUse())
+	/*
+	  if (getRegisteredXMPPTLSUse())
 	    connectionConfiguration.setSecurityMode(ConnectionConfiguration.SecurityMode.legacy);
-	
+	    using TLS means we dont need this code anymore...
+	*/
 	
 	xmppConnection = new XMPPConnection(connectionConfiguration);
 	try {

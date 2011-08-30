@@ -57,7 +57,7 @@ import org.jivesoftware.smackx.pubsub.Item;
 import org.jivesoftware.smackx.pubsub.ItemsExtension;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.pubsub.LeafNode;
-
+ 
 /**
  * Little extension of {@link PubSubManager} which allows to add {@link PEPListener}.
  *
@@ -72,8 +72,9 @@ public class PepSubManager extends PubSubManager {
      * @param connection the connection
      */
     public PepSubManager(final Connection connection) {
-	super(connection);
-	init(connection);
+    	
+    	super(connection);
+    	init(connection);
     }
 
     /**
