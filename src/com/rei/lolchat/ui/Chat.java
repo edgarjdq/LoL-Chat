@@ -346,7 +346,6 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
      * @throws RemoteException If a Binder remote-invocation error occurred.
      */
     private void changeCurrentChat(Contact contact) throws RemoteException {
-
     	if (mContact.isMUC()) {
 	    	IChatMUC mChat = mChatManager.getMUCChat(mContact) ;
 		    if (mChat != null) {
@@ -585,7 +584,6 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	@Override
 	public void processMessage(IChat chat, final Message msg) throws RemoteException {
 	    final String fromBareJid = StringUtils.parseBareAddress(msg.getFrom());
-
 	    if (mContact.getJID().equals(fromBareJid)) {
 		mHandler.post(new Runnable() {
 
@@ -814,7 +812,7 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	    	//joinGame.setVisibility(View.VISIBLE);
 	    	joinGame.setOnClickListener(new View.OnClickListener() {
 	    		  public void onClick(View v) {
-	    			  	Message m = msg.getInvite();
+	    			  	Message m = msg.getInvite(); 
 	    			  	/*context = Chat.this.getApplicationContext();
 	    			    String room = "1742641244";
 		  		    	String pseudo = "test";
@@ -1078,9 +1076,6 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 				    mChat = mChatManager.createChat(mContact, mMessageListener);
 				    mChat.setOpen(true);
 				}
-				Log.i("XMPP", "msgToSend.getSubject(): "+msgToSend.getSubject());
-				Log.i("XMPP", "msgToSend.getBody(): "+msgToSend.getBody());
-				Log.i("XMPP", "msgToSend.getType(): "+msgToSend.getType());
 				mChat.sendMessage(msgToSend);
 			    final String self = getString(R.string.chat_self);
 			    MessageText lastMessage = null;

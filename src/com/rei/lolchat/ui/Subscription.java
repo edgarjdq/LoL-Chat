@@ -101,7 +101,7 @@ public class Subscription extends Activity {
 	findViewById(R.id.SubscriptionAccept).setOnClickListener(mClickListener);
 	findViewById(R.id.SubscriptionRefuse).setOnClickListener(mClickListener);
 	Contact c = new Contact(getIntent().getData());
-	mContact = c.getJID();
+	mContact = c.getName();
 	TextView tv = (TextView) findViewById(R.id.SubscriptionText);
 	String str = String.format(getString(R.string.SubscriptText), mContact);
 	tv.setText(str);

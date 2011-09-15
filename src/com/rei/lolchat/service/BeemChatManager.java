@@ -244,7 +244,6 @@ public class BeemChatManager extends IChatManager.Stub {
     public List<Contact> getOpenedChatList() throws RemoteException {
 	List<Contact> openedChats = new ArrayList<Contact>();
 	IRoster mRoster = mService.getBind().getRoster();
-
 	for (ChatAdapter chat : mChats.values()) {
 	    if (chat.getMessages().size() > 0) {
 	    	Contact t = mRoster.getContact(chat.getParticipant().getJIDWithRes());
@@ -285,18 +284,18 @@ public class BeemChatManager extends IChatManager.Stub {
 	    IChat newchat = getChat(chat);
 	    Log.d(TAG, "Chat" + chat.toString() + " created locally " + locally + " with " + chat.getParticipant());
 	    try {
-		newchat.addMessageListener(mChatListener);
-		final int n = mRemoteChatCreationListeners.beginBroadcast();
-
-		for (int i = 0; i < n; i++) {
-		    IChatManagerListener listener = mRemoteChatCreationListeners.getBroadcastItem(i);
-		    listener.chatCreated(newchat, locally);
-		}
-		mRemoteChatCreationListeners.finishBroadcast();
+			newchat.addMessageListener(mChatListener);
+			final int n = mRemoteChatCreationListeners.beginBroadcast();
+			Log.d(TAG, "Chat " +newchat.getMessages());
+			for (int i = 0; i < n; i++) {
+			    IChatManagerListener listener = mRemoteChatCreationListeners.getBroadcastItem(i);
+			    listener.chatCreated(newchat, locally);
+			}
+			mRemoteChatCreationListeners.finishBroadcast();
 	    } catch (RemoteException e) {
-		// The RemoteCallbackList will take care of removing the
-		// dead listeners.
-		Log.w(TAG, " Error while triggering remote connection listeners in chat creation", e);
+			// The RemoteCallbackList will take care of removing the
+			// dead listeners.
+			Log.w(TAG, " Error while triggering remote connection listeners in chat creation", e);
 	    }
 	}
 

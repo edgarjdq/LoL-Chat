@@ -183,8 +183,18 @@ public class Message implements Parcelable {
 		    mBody = smackMsg.getBody();
 		    mSubject = smackMsg.getSubject();
 		    mThread = smackMsg.getThread();
-		    
+		    /*
+		     * TODO: Figure out why this blocks all incomming messages from being displayed...
+		     * 
+			This should work, but it doesnt. very strange...
+			
 			if(mSubject.equals("GAME_INVITE") || mSubject.equals("GAME_INVITE_ACK")){
+			
+			*/
+		   
+		    //if there are more than 10 > in this string, its probably xml...
+		    int charCount = mBody.replaceAll("[^>]", "").length();
+			if(charCount > 10){
 				DocumentBuilder db = null;
 				try {
 					db = DocumentBuilderFactory.newInstance().newDocumentBuilder();

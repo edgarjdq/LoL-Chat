@@ -217,6 +217,7 @@ public class ContactList extends Activity {
     protected void onPrepareDialog(int id, Dialog dialog) {
         switch (id) {
             case USER_STATS:
+            	if(dialog == null) break;
             	dialog.setContentView(R.layout.dialog_stats);
             	dialog.setTitle(mSelectedContact.getName() + " " + getString(R.string.CDInfos));
             	TextView text = (TextView) dialog.findViewById(R.id.text);
@@ -744,7 +745,13 @@ public class ContactList extends Activity {
 	    return ld;
 	}
 	private Drawable getChampDrawable(String champ){
-		Drawable c = getResources().getDrawable(getResources().getIdentifier("champ_"+champ.toLowerCase()+"_square_0", "drawable", getPackageName()));
+		int cha = getResources().getIdentifier("champ_"+champ.toLowerCase()+"_square_0", "drawable", getPackageName());
+		Drawable c = null;
+		if(cha != 0){
+			c = getResources().getDrawable(cha);
+		}else{
+			c = getResources().getDrawable(R.drawable.lol128);
+		}
 		return c;
 	}
 	/**

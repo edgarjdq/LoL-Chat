@@ -768,7 +768,13 @@ public class XmppConnectionAdapter extends IXmppConnection.Stub {
 	    Presence p = (Presence) packet;
 	    if (p.getType() != Presence.Type.subscribe)
 		return;
-	    String from = p.getFrom();
+	    
+	    String from = "[Unknown]";
+		try {
+			from = mRoster.getContact(p.getFrom()).getName();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	    Notification notification = new Notification(android.R.drawable.stat_notify_more, mService.getString(
 		R.string.AcceptContactRequest, from), System.currentTimeMillis());
 	    notification.flags = Notification.FLAG_AUTO_CANCEL;
@@ -777,6 +783,7 @@ public class XmppConnectionAdapter extends IXmppConnection.Stub {
 	    notification.setLatestEventInfo(mService, from, mService
 		.getString(R.string.AcceptContactRequestFrom, from), PendingIntent.getActivity(mService, 0,
 		    intent, PendingIntent.FLAG_ONE_SHOT));
+	    
 	    int id = p.hashCode();
 	    mService.sendNotification(id, notification);
 	}

@@ -156,8 +156,10 @@ public class AccountConfigure extends Activity implements OnClickListener {
 	String server_long = server_spinner.getSelectedItem().toString();
 	
 	String server = "chat.na.lol.riotgames.com";
-	if(server_long.equals(getResources().getString(R.string.ServerEU))){
+	if(server_long.equals(getResources().getString(R.string.ServerEUW))){
 		server = "chat.eu.lol.riotgames.com";
+	}else if(server_long.equals(getResources().getString(R.string.ServerEUNE))){
+		server = "chat.eun1.lol.riotgames.com";
 	}
 	
 	edit.putBoolean(BeemApplication.USE_AUTO_AWAY_KEY, false);

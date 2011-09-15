@@ -239,7 +239,6 @@ public class BeemService extends Service {
 		    if ("".equals(mHost))
 			mHost = mService;
 		    String tmpPort = mSettings.getString("settings_key_xmpp_port", "5223");
-		    
 		    if (!"".equals(tmpPort))
 			mPort = Integer.parseInt(tmpPort);
 		}

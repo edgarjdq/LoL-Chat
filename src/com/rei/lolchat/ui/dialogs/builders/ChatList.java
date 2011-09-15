@@ -76,7 +76,7 @@ public class ChatList extends AlertDialog.Builder {
 	    	if (c.isMUC()) {
 	    		items[i++] = "[C] "+c.getJID();
 	    	} else {
-	    		items[i++] = c.getJIDWithRes();
+	    		items[i++] = c.getName();
 	    	}
 	    }
 	    setTitle(R.string.chat_dialog_change_chat_title);

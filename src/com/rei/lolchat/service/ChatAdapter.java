@@ -129,10 +129,9 @@ public class ChatAdapter extends IChat.Stub {
 			type = org.jivesoftware.smack.packet.Message.Type.error;
 			break;
 		default:
-			type = org.jivesoftware.smack.packet.Message.Type.normal;
+			type = org.jivesoftware.smack.packet.Message.Type.chat;
 			break;
 	}
-	Log.i("XMPP", "type: "+type);
 	send.setType(type);
 	try {
 		
