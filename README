@@ -1,7 +1,0 @@
-Currently you need to have Android 2.1 or greater. I can make it support back to 1.5 but it would take a little time. So if there is a large request for that I’ll do it. Most people are beyond that though.
-
-It’s localized to 10 languages right now; English, German, Spanish, French, Italian, Portegeese, Russian, Swedish, Chianese, Thai. If you want your language to be included, let me know and I’ll get it added. 
-
-I’m also working on an iOS version, but Apple only allows 3 kinds of apps to run in the background; VoIP, media, location. The list doesn't include Chat so it would not work as well as the Android version, but it would still be nice to have.
-
-I am not affiliated with Riot Games or League of Legends. I just love the game and I love to write code. This app is the culmination of the two.

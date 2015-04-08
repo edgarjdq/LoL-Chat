@@ -1,0 +1,92 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .idea\
+* .idea\.name
+* .idea\compiler.xml
+* .idea\copyright\
+* .idea\copyright\profiles_settings.xml
+* .idea\encodings.xml
+* .idea\misc.xml
+* .idea\modules.xml
+* .idea\scopes\
+* .idea\scopes\scope_settings.xml
+* .idea\vcs.xml
+* .idea\workspace.xml
+* LoL-Chat.iml
+* README
+* default.properties
+* out\
+* out\production\
+* out\production\LoL-Chat\
+* out\production\LoL-Chat\com\
+* out\production\LoL-Chat\com\rei\
+* out\production\LoL-Chat\com\rei\lolchat\
+* out\production\LoL-Chat\com\rei\lolchat\service\
+* out\production\LoL-Chat\com\rei\lolchat\service\Contact.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\Message.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\PresenceAdapter.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\PrivacyListItem.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\UserInfo.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IBeemConnectionListener.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IBeemRosterListener.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IChat.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IChatMUC.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IChatManager.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IChatManagerListener.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IContact.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IMessageListener.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IPrivacyListListener.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IPrivacyListManager.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IRoster.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IXmppConnection.aidl
+* out\production\LoL-Chat\com\rei\lolchat\service\aidl\IXmppFacade.aidl
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => app\src\main\AndroidManifest.xml
+* res\ => app\src\main\res\
+* src\ => app\src\main\java\
+* src\com\rei\lolchat\service\aidl\IBeemConnectionListener.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IBeemConnectionListener.aidl
+* src\com\rei\lolchat\service\aidl\IBeemRosterListener.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IBeemRosterListener.aidl
+* src\com\rei\lolchat\service\aidl\IChat.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IChat.aidl
+* src\com\rei\lolchat\service\aidl\IChatManager.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IChatManager.aidl
+* src\com\rei\lolchat\service\aidl\IChatManagerListener.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IChatManagerListener.aidl
+* src\com\rei\lolchat\service\aidl\IChatMUC.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IChatMUC.aidl
+* src\com\rei\lolchat\service\aidl\IContact.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IContact.aidl
+* src\com\rei\lolchat\service\aidl\IMessageListener.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IMessageListener.aidl
+* src\com\rei\lolchat\service\aidl\IPrivacyListListener.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IPrivacyListListener.aidl
+* src\com\rei\lolchat\service\aidl\IPrivacyListManager.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IPrivacyListManager.aidl
+* src\com\rei\lolchat\service\aidl\IRoster.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IRoster.aidl
+* src\com\rei\lolchat\service\aidl\IXmppConnection.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IXmppConnection.aidl
+* src\com\rei\lolchat\service\aidl\IXmppFacade.aidl => app\src\main\aidl\com\rei\lolchat\service\aidl\IXmppFacade.aidl
+* src\com\rei\lolchat\service\Contact.aidl => app\src\main\aidl\com\rei\lolchat\service\Contact.aidl
+* src\com\rei\lolchat\service\Message.aidl => app\src\main\aidl\com\rei\lolchat\service\Message.aidl
+* src\com\rei\lolchat\service\PresenceAdapter.aidl => app\src\main\aidl\com\rei\lolchat\service\PresenceAdapter.aidl
+* src\com\rei\lolchat\service\PrivacyListItem.aidl => app\src\main\aidl\com\rei\lolchat\service\PrivacyListItem.aidl
+* src\com\rei\lolchat\service\UserInfo.aidl => app\src\main\aidl\com\rei\lolchat\service\UserInfo.aidl
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

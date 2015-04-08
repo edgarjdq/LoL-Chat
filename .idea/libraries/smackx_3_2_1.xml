@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="smackx-3.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.igniterealtime.smack/smackx/3.2.1/f566f524d0d3121f9f6e81523dac0faa9b637d88/smackx-3.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.igniterealtime.smack/smackx/3.2.1/2192ee780eae679cc38f97fb0c44dd92304af44e/smackx-3.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
