@@ -83,8 +83,11 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="smack-3.2.1" level="project" />
-    <orderEntry type="library" exported="" name="smackx-3.2.1" level="project" />
+    <orderEntry type="library" exported="" name="jbosh-0.6.0" level="project" />
+    <orderEntry type="library" exported="" name="xSocket-2.4.6" level="project" />
+    <orderEntry type="library" exported="" name="xlightweb-2.5" level="project" />
+    <orderEntry type="library" exported="" name="xpp3_min-1.1.4c" level="project" />
+    <orderEntry type="module" module-name="smack" exported="" />
   </component>
 </module>
 
