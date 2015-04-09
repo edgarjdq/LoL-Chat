@@ -51,7 +51,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.ChatState;
@@ -77,7 +76,7 @@ public class ChatAdapter extends IChat.Stub {
     private final Contact mParticipant;
     private String mState;
     private boolean mIsOpen;
-    private final List<Message> mMessages;
+    private final List<Massage> mMassages;
     private final RemoteCallbackList<IMessageListener> mRemoteListeners = new RemoteCallbackList<IMessageListener>();
     private final MsgListener mMsgListener = new MsgListener();
     private boolean mIsHistory;
@@ -91,7 +90,7 @@ public class ChatAdapter extends IChat.Stub {
     public ChatAdapter(final Chat chat) {
 	mAdaptee = chat;
 	mParticipant = new Contact(chat.getParticipant());
-	mMessages = new LinkedList<Message>();
+	mMassages = new LinkedList<Massage>();
 	mAdaptee.addMessageListener(mMsgListener);
     }
 
@@ -107,25 +106,25 @@ public class ChatAdapter extends IChat.Stub {
      * {@inheritDoc}
      */
     @Override
-    public void sendMessage(com.rei.lolchat.service.Message message) throws RemoteException {
+    public void sendMessage(Massage massage) throws RemoteException {
 	org.jivesoftware.smack.packet.Message send = new org.jivesoftware.smack.packet.Message();
-	send.setTo(message.getTo());
-	send.setBody(message.getBody());
-	send.setThread(message.getThread());
-	send.setSubject(message.getSubject());
+	send.setTo(massage.getTo());
+	send.setBody(massage.getBody());
+	send.setThread(massage.getThread());
+	send.setSubject(massage.getSubject());
 	
 	org.jivesoftware.smack.packet.Message.Type type;
-	switch(message.getType()){
-		case Message.MSG_TYPE_CHAT:
+	switch(massage.getType()){
+		case Massage.MSG_TYPE_CHAT:
 			type = org.jivesoftware.smack.packet.Message.Type.chat;
 			break;
-		case Message.MSG_TYPE_GROUP_CHAT:
+		case Massage.MSG_TYPE_GROUP_CHAT:
 			type = org.jivesoftware.smack.packet.Message.Type.groupchat;
 			break;
-		case Message.MSG_TYPE_NORMAL:
+		case Massage.MSG_TYPE_NORMAL:
 			type = org.jivesoftware.smack.packet.Message.Type.normal;
 			break;
-		case Message.MSG_TYPE_ERROR:
+		case Massage.MSG_TYPE_ERROR:
 			type = org.jivesoftware.smack.packet.Message.Type.error;
 			break;
 		default:
@@ -136,13 +135,13 @@ public class ChatAdapter extends IChat.Stub {
 	try {
 		
 	    mAdaptee.sendMessage(send);
-	    mMessages.add(message);
+	    mMassages.add(massage);
 	} catch (XMPPException e) {
 	    e.printStackTrace();
 	}
 	String state = Environment.getExternalStorageState();
 	if (mIsHistory && Environment.MEDIA_MOUNTED.equals(state))
-	    saveHistory(message, mAccountUser);
+	    saveHistory(massage, mAccountUser);
     }
 
     /**
@@ -208,18 +207,18 @@ public class ChatAdapter extends IChat.Stub {
      * {@inheritDoc}
      */
     @Override
-    public List<Message> getMessages() throws RemoteException {
-	return Collections.unmodifiableList(mMessages);
+    public List<Massage> getMessages() throws RemoteException {
+	return Collections.unmodifiableList(mMassages);
     }
 
     /**
      * Add a message in the chat history.
      * @param msg the message to add
      */
-    void addMessage(Message msg) {
-	if (mMessages.size() == HISTORY_MAX_SIZE)
-	    mMessages.remove(0);
-	mMessages.add(msg);
+    void addMessage(Massage msg) {
+	if (mMassages.size() == HISTORY_MAX_SIZE)
+	    mMassages.remove(0);
+	mMassages.add(msg);
 	if (!"".equals(msg.getBody()) && msg.getBody() != null) {
 	    String state = Environment.getExternalStorageState();
 	    if (mIsHistory && Environment.MEDIA_MOUNTED.equals(state))
@@ -232,7 +231,7 @@ public class ChatAdapter extends IChat.Stub {
      * @param msg the message receive
      * @param contactName the name of the contact
      */
-    public void saveHistory(Message msg, String contactName) {
+    public void saveHistory(Massage msg, String contactName) {
 	File path = getHistoryPath();
     	File filepath;
     	if (contactName.equals(msg.getFrom()))
@@ -311,7 +310,7 @@ public class ChatAdapter extends IChat.Stub {
 
 	@Override
 	public void processMessage(Chat chat, org.jivesoftware.smack.packet.Message message) {
-	    Message msg = new Message(message);
+	    Massage msg = new Massage(message);
 	    //TODO add que les message pas de type errors
 	    ChatAdapter.this.addMessage(msg);
 	    final int n = mRemoteListeners.beginBroadcast();

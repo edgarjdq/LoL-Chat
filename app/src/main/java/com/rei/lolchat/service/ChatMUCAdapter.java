@@ -39,9 +39,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.ChatStateListener;
-import org.jivesoftware.smackx.ChatState;
+
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -62,7 +60,7 @@ public class ChatMUCAdapter extends IChatMUC.Stub {
     private boolean mIsOpen;
     private String mNick ;
     private final BeemService mService;
-    private final List<Message> mMessages;
+    private final List<Massage> mMassages;
     private final RemoteCallbackList<IMessageListener> mRemoteListeners = new RemoteCallbackList<IMessageListener>();
     private final MsgMUCListener mMsgListener = new MsgMUCListener();
     
@@ -73,7 +71,7 @@ public class ChatMUCAdapter extends IChatMUC.Stub {
     public ChatMUCAdapter(final MultiUserChat chat, final BeemService service, String nick) {
     	mAdaptee = chat;
     	mParticipant = new Contact(chat.getRoom(),true);
-    	mMessages = new LinkedList<Message>();
+    	mMassages = new LinkedList<Massage>();
     	mAdaptee.addMessageListener(mMsgListener);
     	mNick = nick ;
     	mService = service;
@@ -97,11 +95,11 @@ public class ChatMUCAdapter extends IChatMUC.Stub {
      * {@inheritDoc}
      */
     @Override
-    public void sendMessage(com.rei.lolchat.service.Message message) throws RemoteException {
+    public void sendMessage(Massage massage) throws RemoteException {
 	org.jivesoftware.smack.packet.Message send = new org.jivesoftware.smack.packet.Message();
-	send.setTo(message.getTo());
-	Log.w(TAG, "message to " + message.getTo());
-	send.setBody(message.getBody());
+	send.setTo(massage.getTo());
+	Log.w(TAG, "message to " + massage.getTo());
+	send.setBody(massage.getBody());
 	send.setType(org.jivesoftware.smack.packet.Message.Type.groupchat);
 	// TODO gerer les messages contenant des XMPPError
 	// send.set
@@ -170,17 +168,17 @@ public class ChatMUCAdapter extends IChatMUC.Stub {
      * {@inheritDoc}
      */
     @Override
-    public List<Message> getMessages() throws RemoteException {
-	return Collections.unmodifiableList(mMessages);
+    public List<Massage> getMessages() throws RemoteException {
+	return Collections.unmodifiableList(mMassages);
     }
     /**
      * Add a message in the chat history.
      * @param msg the message to add
      */
-    void addMessage(Message msg) {
-	if (mMessages.size() == HISTORY_MAX_SIZE)
-	    mMessages.remove(0);
-	mMessages.add(msg);
+    void addMessage(Massage msg) {
+	if (mMassages.size() == HISTORY_MAX_SIZE)
+	    mMassages.remove(0);
+	mMassages.add(msg);
     }
     /**
      * Listener.
@@ -192,7 +190,7 @@ public class ChatMUCAdapter extends IChatMUC.Stub {
 	public MsgMUCListener() { }
 	public void processPacket(Packet p) {
 		org.jivesoftware.smack.packet.Message message = (org.jivesoftware.smack.packet.Message) p ;
-	    Message  msg = new Message(message);
+	    Massage msg = new Massage(message);
 	    //TODO add que les message pas de type errors
 	    ChatMUCAdapter.this.addMessage(msg);
 	    final int n = mRemoteListeners.beginBroadcast();

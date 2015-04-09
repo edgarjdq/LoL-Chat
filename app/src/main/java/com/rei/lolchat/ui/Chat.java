@@ -49,24 +49,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.util.StringUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -81,13 +66,11 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.view.KeyEvent;
@@ -108,9 +91,8 @@ import android.widget.TextView;
 
 import com.rei.lolchat.R;
 import com.rei.lolchat.BeemApplication;
-import com.rei.lolchat.providers.AvatarProvider;
 import com.rei.lolchat.service.Contact;
-import com.rei.lolchat.service.Message;
+import com.rei.lolchat.service.Massage;
 import com.rei.lolchat.service.PresenceAdapter;
 import com.rei.lolchat.service.aidl.IBeemRosterListener;
 import com.rei.lolchat.service.aidl.IChat;
@@ -417,22 +399,22 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
     
     /**
      * Convert a list of Message coming from the service to a list of MessageText that can be displayed in UI.
-     * @param chatMessages the list of Message
+     * @param chatMassages the list of Message
      * @return a list of message that can be displayed.
      */
-    private List<MessageText> convertMessagesList(List<Message> chatMessages) {
-	List<MessageText> result = new ArrayList<MessageText>(chatMessages.size());
+    private List<MessageText> convertMessagesList(List<Massage> chatMassages) {
+	List<MessageText> result = new ArrayList<MessageText>(chatMassages.size());
 	String remoteName = mContact.getName();
 	String localName = getString(R.string.chat_self);
 	MessageText lastMessage = null;
-	for (Message m : chatMessages) {
+	for (Massage m : chatMassages) {
 	    String name = remoteName;
 	    String fromBareJid = StringUtils.parseBareAddress(m.getFrom());
-	    if (m.getType() == Message.MSG_TYPE_ERROR) {
+	    if (m.getType() == Massage.MSG_TYPE_ERROR) {
 			lastMessage = null;
 			result.add(new MessageText(fromBareJid, name, m.getBody(), true, false, m.getTimestamp()));
-	    } else if (m.getType() == Message.MSG_TYPE_CHAT || m.getType() == Message.MSG_TYPE_GROUP_CHAT) {
-			if (m.getType() == Message.MSG_TYPE_GROUP_CHAT) {
+	    } else if (m.getType() == Massage.MSG_TYPE_CHAT || m.getType() == Massage.MSG_TYPE_GROUP_CHAT) {
+			if (m.getType() == Massage.MSG_TYPE_GROUP_CHAT) {
 				name = StringUtils.parseResource(m.getFrom());
 			}
 		    	
@@ -451,7 +433,7 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 					result.add(lastMessage);
 			    }
 			}
-	    } else if (m.getType() == Message.MSG_TYPE_NORMAL){
+	    } else if (m.getType() == Massage.MSG_TYPE_NORMAL){
 	    	if(m.isInvite()){
 				lastMessage = new MessageText(fromBareJid, name, m.getBody(), false, m.isHL(), m.getTimestamp(), m);
 				result.add(lastMessage);
@@ -582,14 +564,14 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public void processMessage(IChat chat, final Message msg) throws RemoteException {
+	public void processMessage(IChat chat, final Massage msg) throws RemoteException {
 	    final String fromBareJid = StringUtils.parseBareAddress(msg.getFrom());
 	    if (mContact.getJID().equals(fromBareJid)) {
 		mHandler.post(new Runnable() {
 
 		    @Override
 		    public void run() {
-			if (msg.getType() == Message.MSG_TYPE_ERROR) {
+			if (msg.getType() == Massage.MSG_TYPE_ERROR) {
 			    mListMessages.add(new MessageText(fromBareJid, mContact.getName(),
 			    msg.getBody(), true, false, msg.getTimestamp()));
 			    mMessagesListAdapter.notifyDataSetChanged();
@@ -626,7 +608,7 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 		}
 	}
 	@Override
-    public void processMUCMessage(IChatMUC chat, final Message msg) throws RemoteException {
+    public void processMUCMessage(IChatMUC chat, final Massage msg) throws RemoteException {
         processMessage(null, msg) ;
     }
 	/**
@@ -812,7 +794,7 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	    	//joinGame.setVisibility(View.VISIBLE);
 	    	joinGame.setOnClickListener(new View.OnClickListener() {
 	    		  public void onClick(View v) {
-	    			  	Message m = msg.getInvite(); 
+	    			  	Massage m = msg.getInvite();
 	    			  	/*context = Chat.this.getApplicationContext();
 	    			    String room = "1742641244";
 		  		    	String pseudo = "test";
@@ -868,8 +850,8 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 
     
     private class Invite{
-    	Message m;
-    	public Message getMessage(){
+    	Massage m;
+    	public Massage getMessage(){
     		return m;
     	}
     }
@@ -884,7 +866,7 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	private boolean mIsError;
 	private boolean mHL;
 	private Date mTimestamp;
-	private Message mInviteMessage;
+	private Massage mInviteMassage;
 	private boolean mIsInvite;
 
 	/**
@@ -933,21 +915,21 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	    mTimestamp = date;
 	}
 	public MessageText(final String bareJid, final String name, final String message,
-			final boolean isError, final boolean isHL, Date date, Message inviteMessage) {
+			final boolean isError, final boolean isHL, Date date, Massage inviteMassage) {
 		    mBareJid = bareJid;
 		    mName = name;
 		    mMessage = message;
 		    mIsError = isError;
 			mHL = isHL ;
 		    mTimestamp = date;
-		    mInviteMessage = inviteMessage;
+		    mInviteMassage = inviteMassage;
 		    mIsInvite = true;
 		}
 	public boolean isInvite(){
 		return mIsInvite;
 	}
-	public Message getInvite(){
-		return mInviteMessage;
+	public Massage getInvite(){
+		return mInviteMassage;
 	}
 	/**
 	 * JID attribute accessor.
@@ -1051,14 +1033,14 @@ public class Chat extends Activity implements TextView.OnEditorActionListener {
 	final String inputContent = mInputField.getText().toString();
 
 	if (!"".equals(inputContent)) {
-		Message msgToSend ;
+		Massage msgToSend ;
 		if (mContact.isMUC()) {
-			msgToSend = new Message(mContact.getJID(), Message.MSG_TYPE_GROUP_CHAT);	
+			msgToSend = new Massage(mContact.getJID(), Massage.MSG_TYPE_GROUP_CHAT);
 		} else {
 			if(mSubject.equals("GAME_INVITE_ACCEPT"))
-				msgToSend = new Message(mContact.getJIDWithRes(), Message.MSG_TYPE_NORMAL);
+				msgToSend = new Massage(mContact.getJIDWithRes(), Massage.MSG_TYPE_NORMAL);
 			else
-				msgToSend = new Message(mContact.getJIDWithRes(), Message.MSG_TYPE_CHAT);
+				msgToSend = new Massage(mContact.getJIDWithRes(), Massage.MSG_TYPE_CHAT);
 		}
 		
 		msgToSend.setSubject(mSubject);

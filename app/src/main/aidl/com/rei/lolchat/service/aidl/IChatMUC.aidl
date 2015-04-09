@@ -33,7 +33,7 @@
 */
 package com.rei.lolchat.service.aidl;
 import  com.rei.lolchat.service.Contact;
-import  com.rei.lolchat.service.Message;
+import  com.rei.lolchat.service.Massage;
 import  com.rei.lolchat.service.aidl.IMessageListener;
 /**
  * An aidl interface for ChatMUC session.
@@ -43,7 +43,7 @@ interface IChatMUC {
 	 * Send a message.
 	 * @param message	the message to send
 	 */
-	void sendMessage(in Message message);
+	void sendMessage(in Massage message);
 	
 	Contact getRoom() ;
 	/**
@@ -60,6 +60,6 @@ interface IChatMUC {
 	void setOpen(in boolean isOpen);
 	boolean isOpen();
 	void setState(in String state);
-	List<Message> getMessages();
+	List<Massage> getMessages();
 	List<Contact> getMembers();
 }

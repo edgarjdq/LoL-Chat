@@ -44,7 +44,7 @@
 package com.rei.lolchat.service.aidl;
 
 import  com.rei.lolchat.service.Contact;
-import  com.rei.lolchat.service.Message;
+import  com.rei.lolchat.service.Massage;
 import  com.rei.lolchat.service.aidl.IMessageListener;
 
 /**
@@ -56,7 +56,7 @@ interface IChat {
     	 * Send a message.
     	 * @param message	the message to send
     	 */
-	void sendMessage(in Message message);
+	void sendMessage(in Massage message);
 
 	/**
 	 * Get the participant of the chat
@@ -84,6 +84,6 @@ interface IChat {
 
 	void setState(in String state);
 
-	List<Message> getMessages();
+	List<Massage> getMessages();
 
 }

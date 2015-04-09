@@ -52,13 +52,9 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.rei.lolchat.ui.Chat;
-
 import android.content.Context;
-import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -73,7 +69,7 @@ import javax.xml.parsers.ParserConfigurationException;
  * This class represents a instant message.
  * @author darisk
  */
-public class Message implements Parcelable {
+public class Massage implements Parcelable {
 
     /** Normal message type. Theese messages are like an email, with subject. */
     public static final int MSG_TYPE_NORMAL = 100;
@@ -88,16 +84,16 @@ public class Message implements Parcelable {
     public static final int MSG_TYPE_ERROR = 400;
 
     /** Parcelable.Creator needs by Android. */
-    public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>() {
+    public static final Parcelable.Creator<Massage> CREATOR = new Parcelable.Creator<Massage>() {
 
 	@Override
-	public Message createFromParcel(Parcel source) {
-	    return new Message(source);
+	public Massage createFromParcel(Parcel source) {
+	    return new Massage(source);
 	}
 
 	@Override
-	public Message[] newArray(int size) {
-	    return new Message[size];
+	public Massage[] newArray(int size) {
+	    return new Massage[size];
 	}
     };
 
@@ -127,7 +123,7 @@ public class Message implements Parcelable {
      * @param to the destinataire of the message
      * @param type the message type
      */
-    public Message(final String to, final int type) {
+    public Massage(final String to, final int type) {
 	mTo = to;
 	mType = type;
 	mBody = "";
@@ -142,7 +138,7 @@ public class Message implements Parcelable {
      * Constructor a message of type chat.
      * @param to the destinataire of the message
      */
-    public Message(final String to) {
+    public Massage(final String to) {
 	this(to, MSG_TYPE_CHAT);
     }
 
@@ -150,7 +146,7 @@ public class Message implements Parcelable {
      * Construct a message from a smack message packet.
      * @param smackMsg Smack message packet
      */
-    public Message(final org.jivesoftware.smack.packet.Message smackMsg) {
+    public Massage(final org.jivesoftware.smack.packet.Message smackMsg) {
 		this(smackMsg.getTo());
 		switch (smackMsg.getType()) {
 		    case chat:
@@ -246,7 +242,7 @@ public class Message implements Parcelable {
 	     * Construct a message from a parcel.
 	     * @param in parcel to use for construction
 	     */
-	    private Message(final Parcel in) {
+	    private Massage(final Parcel in) {
 		mType = in.readInt();
 		mTo = in.readString();
 		mBody = in.readString();

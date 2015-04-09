@@ -51,22 +51,17 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.LoginFilter;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import org.jivesoftware.smack.util.StringUtils;
-
-import com.rei.lolchat.ui.Login;
-import com.rei.lolchat.ui.Settings;
-import com.rei.lolchat.utils.Status;
 import com.rei.lolchat.BeemApplication;
 import com.rei.lolchat.R;
+import com.rei.lolchat.ui.Login;
+import com.rei.lolchat.ui.Settings;
 
 /**
  * Activity to enter the information required in order to configure a XMPP account.
@@ -85,6 +80,7 @@ public class AccountConfigure extends Activity implements OnClickListener {
     private boolean mValidJid;
     private boolean mValidPassword;
     private Spinner mServers;
+
     /**
      * Constructor.
      */
@@ -93,109 +89,111 @@ public class AccountConfigure extends Activity implements OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	setContentView(R.layout.wizard_account_configure);
-	mNextButton = (Button) findViewById(R.id.next);
-	mNextButton.setOnClickListener(this);
-	mAccountJID = (EditText) findViewById(R.id.account_username);
-	mAccountPassword = (EditText) findViewById(R.id.account_password);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.wizard_account_configure);
+        mNextButton = (Button) findViewById(R.id.next);
+        mNextButton.setOnClickListener(this);
+        mAccountJID = (EditText) findViewById(R.id.account_username);
+        mAccountPassword = (EditText) findViewById(R.id.account_password);
 
-	
-    
-	InputFilter[] orgFilters = mAccountJID.getFilters();
-	InputFilter[] newFilters = new InputFilter[orgFilters.length + 1];
-	int i;
-	for (i = 0; i < orgFilters.length; i++)
-	    newFilters[i] = orgFilters[i];
-	newFilters[i] = new LoginFilter.UsernameFilterGeneric();
-	mAccountJID.setFilters(newFilters);
-	mAccountJID.addTextChangedListener(mJidTextWatcher);
-	mAccountPassword.addTextChangedListener(mPasswordTextWatcher);
+
+        InputFilter[] orgFilters = mAccountJID.getFilters();
+        InputFilter[] newFilters = new InputFilter[orgFilters.length + 1];
+        int i;
+        for (i = 0; i < orgFilters.length; i++)
+            newFilters[i] = orgFilters[i];
+        newFilters[i] = new LoginFilter.UsernameFilterGeneric();
+        mAccountJID.setFilters(newFilters);
+        mAccountJID.addTextChangedListener(mJidTextWatcher);
+        mAccountPassword.addTextChangedListener(mPasswordTextWatcher);
     }
 
     @Override
     public void onClick(View v) {
-	Intent i = null;
-	if (v == mNextButton) {
-	    configureAccount();
-	    i = new Intent(this, Login.class);
-	    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    startActivity(i);
-	    finish();
-	} else if (v == mManualConfigButton) {
-	    i = new Intent(this, Settings.class);
-	    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    startActivityForResult(i, MANUAL_CONFIGURATION);
-	}
+        Intent i = null;
+        if (v == mNextButton) {
+            configureAccount();
+            i = new Intent(this, Login.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+            finish();
+        } else if (v == mManualConfigButton) {
+            i = new Intent(this, Settings.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivityForResult(i, MANUAL_CONFIGURATION);
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	if (requestCode == MANUAL_CONFIGURATION) {
-	    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-	    String login = settings.getString(BeemApplication.ACCOUNT_USERNAME_KEY, "");
-	    String password = settings.getString(BeemApplication.ACCOUNT_PASSWORD_KEY, "");
-	    mAccountJID.setText(login);
-	    mAccountPassword.setText(password);
-	    checkUsername(login);
-	    checkPassword(password);
-	    mNextButton.setEnabled(mValidJid && mValidPassword);
-	}
+        if (requestCode == MANUAL_CONFIGURATION) {
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            String login = settings.getString(BeemApplication.ACCOUNT_USERNAME_KEY, "");
+            String password = settings.getString(BeemApplication.ACCOUNT_PASSWORD_KEY, "");
+            mAccountJID.setText(login);
+            mAccountPassword.setText(password);
+            checkUsername(login);
+            checkPassword(password);
+            mNextButton.setEnabled(mValidJid && mValidPassword);
+        }
     }
 
     /**
      * Store the account in the settings.
      */
     private void configureAccount() {
-	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-	SharedPreferences.Editor edit = settings.edit();
-	edit.putString(BeemApplication.ACCOUNT_USERNAME_KEY, mAccountJID.getText().toString());
-	edit.putString(BeemApplication.ACCOUNT_PASSWORD_KEY, mAccountPassword.getText().toString());
-	
-	Spinner server_spinner = (Spinner) findViewById(R.id.account_server);  
-	String server_long = server_spinner.getSelectedItem().toString();
-	
-	String server = "chat.na.lol.riotgames.com";
-	if(server_long.equals(getResources().getString(R.string.ServerEUW))){
-		server = "chat.eu.lol.riotgames.com";
-	}else if(server_long.equals(getResources().getString(R.string.ServerEUNE))){
-		server = "chat.eun1.lol.riotgames.com";
-	}
-	
-	edit.putBoolean(BeemApplication.USE_AUTO_AWAY_KEY, false);
-	edit.putBoolean("settings_key_xmpp_tls_use", true);
-	edit.putBoolean("settings_key_specific_server", true);
-	
-	edit.putString("settings_key_xmpp_server", server);
-	edit.putString("settings_key_xmpp_port", "5223");
-	
-	edit.putString(BeemApplication.LEVEL_KEY, getResources().getString(R.string.StatusLevelDefault));
-	edit.putString(BeemApplication.LEAVES_KEY, getResources().getString(R.string.StatusLeavesDefault));
-	edit.putString(BeemApplication.WINS_KEY, getResources().getString(R.string.StatusWinsDefault));
-	edit.putString(BeemApplication.MSG_KEY, getResources().getString(R.string.StatusMsgDefault));
-	edit.putBoolean(BeemApplication.DEFAULT_STATUS_KEY, true);
-	
-	edit.commit();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor edit = settings.edit();
+        edit.putString(BeemApplication.ACCOUNT_USERNAME_KEY, mAccountJID.getText().toString());
+        edit.putString(BeemApplication.ACCOUNT_PASSWORD_KEY, mAccountPassword.getText().toString());
+
+        Spinner server_spinner = (Spinner) findViewById(R.id.account_server);
+        String server_long = server_spinner.getSelectedItem().toString();
+
+        //TODO add servers
+        String server = "chat.na.lol.riotgames.com";
+        if (server_long.equals(getResources().getString(R.string.ServerEUW))) {
+            server = "chat.eu.lol.riotgames.com";
+        } else if (server_long.equals(getResources().getString(R.string.ServerEUNE))) {
+            server = "chat.eun1.lol.riotgames.com";
+        }
+
+        edit.putBoolean(BeemApplication.USE_AUTO_AWAY_KEY, false);
+        edit.putBoolean("settings_key_xmpp_tls_use", true);
+        edit.putBoolean("settings_key_specific_server", true);
+
+        edit.putString("settings_key_xmpp_server", server);
+        edit.putString("settings_key_xmpp_port", "5223");
+
+        edit.putString(BeemApplication.LEVEL_KEY, getResources().getString(R.string.StatusLevelDefault));
+        edit.putString(BeemApplication.LEAVES_KEY, getResources().getString(R.string.StatusLeavesDefault));
+        edit.putString(BeemApplication.WINS_KEY, getResources().getString(R.string.StatusWinsDefault));
+        edit.putString(BeemApplication.MSG_KEY, getResources().getString(R.string.StatusMsgDefault));
+        edit.putBoolean(BeemApplication.DEFAULT_STATUS_KEY, true);
+
+        edit.commit();
     }
 
     /**
      * Check that the username is really a JID.
+     *
      * @param username the username to check.
      */
     private void checkUsername(String username) {
-    	//we build the JID for the user, so we can validate it as true
-	    mValidJid = true;
-	}
+        //we build the JID for the user, so we can validate it as true
+        mValidJid = true;
+    }
 
     /**
      * Check password.
+     *
      * @param password the password to check.
      */
     private void checkPassword(String password) {
-	if (password.length() > 0)
-	    mValidPassword = true;
-	else
-	    mValidPassword = false;
+        if (password.length() > 0)
+            mValidPassword = true;
+        else
+            mValidPassword = false;
     }
 
     /**
@@ -203,25 +201,25 @@ public class AccountConfigure extends Activity implements OnClickListener {
      */
     private class PasswordTextWatcher implements TextWatcher {
 
-	/**
-	 * Constructor.
-	 */
-	public PasswordTextWatcher() {
-	}
+        /**
+         * Constructor.
+         */
+        public PasswordTextWatcher() {
+        }
 
-	@Override
-	public void afterTextChanged(Editable s) {
-	    checkPassword(s.toString());
-	    mNextButton.setEnabled(mValidJid && mValidPassword);
-	}
+        @Override
+        public void afterTextChanged(Editable s) {
+            checkPassword(s.toString());
+            mNextButton.setEnabled(mValidJid && mValidPassword);
+        }
 
-	@Override
-	public void beforeTextChanged(CharSequence  s, int start, int count, int after) {
-	}
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-	@Override
-	public void onTextChanged(CharSequence  s, int start, int before, int count) {
-	}
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
     }
 
     /**
@@ -229,24 +227,24 @@ public class AccountConfigure extends Activity implements OnClickListener {
      */
     private class JidTextWatcher implements TextWatcher {
 
-	/**
-	 * Constructor.
-	 */
-	public JidTextWatcher() {
-	}
+        /**
+         * Constructor.
+         */
+        public JidTextWatcher() {
+        }
 
-	@Override
-	public void afterTextChanged(Editable s) {
-	    checkUsername(s.toString());
-	    mNextButton.setEnabled(mValidJid && mValidPassword);
-	}
+        @Override
+        public void afterTextChanged(Editable s) {
+            checkUsername(s.toString());
+            mNextButton.setEnabled(mValidJid && mValidPassword);
+        }
 
-	@Override
-	public void beforeTextChanged(CharSequence  s, int start, int count, int after) {
-	}
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-	@Override
-	public void onTextChanged(CharSequence  s, int start, int before, int count) {
-	}
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
     }
 }

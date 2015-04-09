@@ -41,11 +41,11 @@ import org.jivesoftware.smackx.pubsub.util.NodeUtils;
  * 
  * @author Robin Collier
  */
-final public class PubSubManager
+public class PubSubManager
 {
-	private Connection con;
-	private String to;
-	private Map<String, Node> nodeMap = new ConcurrentHashMap<String, Node>();
+	protected Connection con;
+    protected String to;
+    protected Map<String, Node> nodeMap = new ConcurrentHashMap<String, Node>();
 	
 	/**
 	 * Create a pubsub manager associated to the specified connection.

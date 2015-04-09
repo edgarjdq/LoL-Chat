@@ -12,10 +12,12 @@
 	<string name="Continue">Continue</string>
 
 	<!--  AccountConfigure class -->
+    <!--TODO add servers-->
 	<string name="AccountConfigureManualConfiguration">Manual Configuration</string>
 	<string name="ServerNA">North America (NA)</string>  
-    <string name="ServerEU">Europe (EU East\\West)</string>  
-     
+    <string name="ServerEU">Europe (EU East\\West)</string>
+    <string name="ServerEUW">Europe W</string>
+    <string name="ServerEUNE">Europe NE</string>
 	
 	<!--  Beem class -->
 	<string name="BeemJabberID">Username</string>

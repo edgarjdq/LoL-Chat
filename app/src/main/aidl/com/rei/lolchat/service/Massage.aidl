@@ -43,4 +43,4 @@
 */
 package com.rei.lolchat.service;
 
-parcelable Message;
+parcelable Massage;
